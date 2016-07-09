@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     @Override
     public void onResume() {
         super.onResume();
-//        requestPopularMovies();
+        requestPopularMovies();
     }
 
     public void refresh() {

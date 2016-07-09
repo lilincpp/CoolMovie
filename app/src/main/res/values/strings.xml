@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Coolmovie</string>
+
+    <!--home-->
+    <string name="home.title">流行电影</string>
+
+    <!--detail-->
+    <string name="detail.empty"></string>
+    <string name="detail.detail">详情</string>
+    <!--movie-->
+    <string name="movie.title">片名:</string>
+    <string name="movie.vote">平均得分:</string>
+    <string name="movie.language">语言:</string>
+    <string name="movie.release_data">上映日期:</string>
+    <string name="movie.overview">剧情简介:</string>
+
+    <!--error-->
+    <string name="error.request">请求服务器失败</string>
+
+    <!--menu-->
+    <string name="menu.refresh">刷新</string>
+    <string name="menu.sort_vote">按评分排序</string>
+    <string name="menu.sort_popular">按流行程度排序</string>
+
+
+</resources>

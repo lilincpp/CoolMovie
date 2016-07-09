@@ -9,45 +9,42 @@
         style="@style/CardViewStyle">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:layout_width="144dp"
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/item_iv_poster"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="fitXY"
                 android:src="@mipmap/ic_launcher"
                 android:transitionName="transitionName" />
 
             <TextView
+                android:padding="4dp"
                 android:id="@+id/item_tv_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/item_iv_poster"
                 android:singleLine="true"
-                android:text="@string/movie.title" />
+                android:layout_below="@+id/item_iv_poster"
+                android:textSize="14sp" />
 
             <TextView
+                android:padding="4dp"
                 android:id="@+id/item_tv_language"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:layout_below="@+id/item_tv_title"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:layout_toEndOf="@+id/item_iv_poster"
-                android:text="@string/movie.language" />
+                android:textSize="14sp" />
 
             <TextView
+                android:padding="4dp"
                 android:id="@+id/item_tv_vote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/item_tv_language"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:layout_toEndOf="@+id/item_iv_poster"
-                android:text="@string/movie.vote" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
 

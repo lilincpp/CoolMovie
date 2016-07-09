@@ -31,6 +31,14 @@ public class MovieDetailActivity extends AppCompatActivity {
     private DisplayImageOptions mDisplayImageOptions;
     private MovieModel.Result mMovie;
 
+    private CollapsingToolbarLayoutState state;
+
+    private enum CollapsingToolbarLayoutState {
+        EXPANDED,
+        COLLAPSED,
+        INTERNEDIATE
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +51,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
-//        getWindow().setStatusBarColor(Color.TRANSPARENT);
-//        getWindow()
-//                .getDecorView()
-//                .setSystemUiVisibility(
-//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setContentView(R.layout.activity_detail);
 
@@ -70,10 +73,13 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.detail_detail);
+        toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
-        collapsingToolbarLayout.setTitle(" ");
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        collapsingToolbarLayout.setTitle(getString(R.string.detail_detail));
+        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
         mMoviePoster = (ImageView) findViewById(R.id.movie_poster);
         mMovieBackground = (ImageView) findViewById(R.id.movie_background);

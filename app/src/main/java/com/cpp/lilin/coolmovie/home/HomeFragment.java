@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,7 +80,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         mMovieAdapter = new MovieAdapter(getActivity(), mMovies);
         mMovieAdapter.setClickListener(this);
         mRv = (RecyclerView) view.findViewById(R.id.rv_movies);
-        mRv.setLayoutManager(new LinearLayoutManager(mRv.getContext()));
+        mRv.setLayoutManager(new GridLayoutManager(mRv.getContext(), 2));
         mRv.setAdapter(mMovieAdapter);
     }
 

@@ -18,16 +18,13 @@ public class RequestUtil {
     public static String getPopularMovies() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)
-                .append("/3/discover/movie?")
-                .append("sort_by=popularity.desc")
-                .append("&")
+                .append("/3/movie/popular?")
                 .append("api_key=")
                 .append(MovieApi.API_KEY);
         return stringBuilder.toString();
     }
 
 
-    //    http://image.tmdb.org/t/p/w500/inVq3FRqcYIRl2la8iZikYYxFNR.jpg
 
     /**
      * 请求一张图片资源

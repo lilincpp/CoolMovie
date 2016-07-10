@@ -79,9 +79,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         mMovies = new ArrayList<>();
         mMovieAdapter = new MovieAdapter(getActivity(), mMovies);
         mMovieAdapter.setClickListener(this);
-        SpaceItemDecoration spaceItemDecoration = new SpaceItemDecoration(8);
         mRv = (RecyclerView) view.findViewById(R.id.rv_movies);
-        mRv.addItemDecoration(spaceItemDecoration);
         mRv.setLayoutManager(new GridLayoutManager(mRv.getContext(), 2));
         mRv.setAdapter(mMovieAdapter);
     }

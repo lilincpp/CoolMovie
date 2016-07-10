@@ -6,7 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <!--修改overflow(设置)的颜色，但会导致菜单的字帖为白色，需要配合以下代码使用-->
+        <!--app:popupTheme="@style/Theme.AppCompat.Light" 在toolbar中添加-->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#FFFFFF</item>
     </style>
 
 
@@ -17,7 +20,9 @@
         <item name="android:elevation">2dp</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:stateListAnimator">@drawable/selector_cardview</item>
-        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <!--<item name="android:layout_margin">8dp</item>-->
         <item name="android:radius">4dp</item>
     </style>
 

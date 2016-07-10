@@ -19,8 +19,8 @@
 
     <!--menu-->
     <string name="menu.refresh">刷新</string>
-    <string name="menu.sort_vote">按评分排序</string>
-    <string name="menu.sort_popular">按流行程度排序</string>
+    <string name="menu.sort_vote">评分最高</string>
+    <string name="menu.sort_popular">最受欢迎</string>
 
 
 </resources>

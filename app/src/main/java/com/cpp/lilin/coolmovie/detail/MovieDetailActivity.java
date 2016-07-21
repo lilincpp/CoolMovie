@@ -8,8 +8,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,16 +40,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.TRANSPARENT);
-        window.setNavigationBarColor(Color.TRANSPARENT);
-
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setContentView(R.layout.activity_detail);
 
         init();
@@ -81,7 +70,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setTitle(getString(R.string.detail_detail));
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
-        mMoviePoster = (ImageView) findViewById(R.id.movie_poster);
+//        mMoviePoster = (ImageView) findViewById(R.id.movie_poster);
         mMovieBackground = (ImageView) findViewById(R.id.movie_background);
 
         mTvMovieTitle = (TextView) findViewById(R.id.movie_title);
@@ -108,9 +97,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         mImageLoader.displayImage(imageUrl, mMovieBackground, mDisplayImageOptions);
 
         //加载海报
-        final String posterFileName = mMovie.getPoster_path().substring(1);
-        final String posterImageUrl = RequestUtil.getImageUrl(posterFileName);
-        mImageLoader.displayImage(posterImageUrl, mMoviePoster, mDisplayImageOptions);
+//        final String posterFileName = mMovie.getPoster_path().substring(1);
+//        final String posterImageUrl = RequestUtil.getImageUrl(posterFileName);
+//        mImageLoader.displayImage(posterImageUrl, mMoviePoster, mDisplayImageOptions);
     }
 
 }

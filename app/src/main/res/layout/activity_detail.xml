@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:orientation="vertical">
 
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="320dp"
         android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -23,9 +23,11 @@
                 android:id="@+id/movie_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
+                android:background="@drawable/test"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.7" />
+                app:layout_collapseParallaxMultiplier="0.7"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -36,57 +38,59 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/movie_title"
                 style="@style/MovieTextStyle"
-                android:layout_marginStart="160dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/movie.title" />
+                android:layout_marginStart="16dp"
+                android:layout_width="160dp"
+                android:lines="2"
+                android:layout_marginTop="16dp"
+                android:text="@string/movie.title"/>
 
             <TextView
                 android:id="@+id/movie_release_data"
                 style="@style/MovieTextStyle"
                 android:layout_below="@+id/movie_title"
-                android:layout_marginStart="160dp"
-                android:text="@string/movie.release_data" />
+                android:layout_marginStart="16dp"
+                android:text="@string/movie.release_data"/>
 
             <TextView
                 android:id="@+id/movie_vote"
                 style="@style/MovieTextStyle"
                 android:layout_below="@+id/movie_release_data"
-                android:layout_marginStart="160dp"
-                android:text="@string/movie.vote" />
+                android:layout_marginStart="16dp"
+                android:text="@string/movie.vote"/>
 
             <TextView
                 android:id="@+id/movie_overview"
                 style="@style/MovieTextStyle"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="120dp"
-                android:text="@string/movie.overview" />
+                android:text="@string/movie.overview"/>
         </RelativeLayout>
 
 
     </android.support.v4.widget.NestedScrollView>
 
-    <ImageView
-        android:id="@+id/movie_poster"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:src="@drawable/test"
-        android:transitionName="share_poster"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_favorite"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_favorite_black_24dp"
         app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|left|end" />
+        app:layout_anchorGravity="bottom|right"
+        />
 
 
 </android.support.design.widget.CoordinatorLayout>

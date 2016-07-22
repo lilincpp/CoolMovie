@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_refresh"
-        android:icon="@drawable/icon_refresh"
+        android:icon="@drawable/ic_refresh"
         android:title="@string/menu.refresh"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_loved"
+        android:icon="@drawable/ic_favorites"
+        android:title="@string/menu.loved"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_sort_popular"
         android:title="@string/menu.sort_popular"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
     <item
         android:id="@+id/menu_sort_vote"
         android:title="@string/menu.sort_vote"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 </menu>

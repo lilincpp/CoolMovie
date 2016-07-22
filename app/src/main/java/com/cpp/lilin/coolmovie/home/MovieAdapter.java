@@ -54,8 +54,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         mImageLoader = ImageLoader.getInstance();
 
         mDisplayImageOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.icon_loading)
-                .showImageOnFail(R.drawable.icon_error)
+                .showImageOnLoading(R.drawable.ic_download)
+                .showImageOnFail(R.drawable.ic_error)
                 .cacheOnDisk(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
@@ -72,7 +72,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final MovieModel.Result movie = mMovies.get(position);
         final String title = movie.getTitle();
-        final String language = mContext.getString(R.string.movie_language) + ((TextUtils.equals(movie.getOriginal_language(), "en")) ? "英语" : "中文");
+        final String language = mContext.getString(R.string.movie_language) + ((TextUtils.equals(movie.getOriginal_language(), "en")) ?
+                "英语" : "中文");
         final String vote = mContext.getString(R.string.movie_vote) + movie.getVote_average();
         final String imageName = movie.getPoster_path().substring(1);
         final String imageUrl = RequestUtil.getImageUrl(imageName);

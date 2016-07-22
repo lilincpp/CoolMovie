@@ -25,7 +25,6 @@ public class RequestUtil {
     }
 
 
-
     /**
      * 请求一张图片资源
      *
@@ -34,6 +33,28 @@ public class RequestUtil {
      */
     public static String getImageUrl(String imageName) {
         String request = MovieApi.SERVICE_IMAGE_URL + imageName;
+        return request;
+    }
+
+    /**
+     * 请求电影的视频
+     *
+     * @param movieID
+     * @return
+     */
+    public static String getVideos(final String movieID) {
+        String request = MovieApi.SERVICE_URL + "/3/movie/" + movieID + "/videos?api_key=" + MovieApi.API_KEY;
+        return request;
+    }
+
+    /**
+     * 请求电影的评论
+     *
+     * @param movieID
+     * @return
+     */
+    public static String getReviews(final String movieID) {
+        String request = MovieApi.SERVICE_URL + "/3/movie/" + movieID + "/reviews?api_key=" + MovieApi.API_KEY;
         return request;
     }
 }

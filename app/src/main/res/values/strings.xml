@@ -7,6 +7,10 @@
     <!--detail-->
     <string name="detail.empty"></string>
     <string name="detail.detail">详情</string>
+    <string name="detail.trailer">此电影所包含的预告片</string>
+    <string name="detail.back">返回</string>
+    <string name="detail.no_review">暂无评论</string>
+    <string name="detail.no_trailer">暂无预告片</string>
     <!--movie-->
     <string name="movie.title">片名:</string>
     <string name="movie.vote">平均得分:</string>
@@ -19,6 +23,7 @@
 
     <!--menu-->
     <string name="menu.refresh">刷新</string>
+    <string name="menu.loved">收藏夹</string>
     <string name="menu.sort_vote">评分最高</string>
     <string name="menu.sort_popular">最受欢迎</string>
 

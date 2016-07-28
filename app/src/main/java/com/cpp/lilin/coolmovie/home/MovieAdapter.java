@@ -21,7 +21,10 @@ import java.util.List;
 /**
  * Created by lilin on 2016/7/9.
  */
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> implements View.OnClickListener {
+public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
+
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_FOOTER = 1;
 
     private Context mContext;
     private List<MovieModel.Result> mMovies;
@@ -33,6 +36,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void update(List<MovieModel.Result> movies) {
         mMovies = movies;
         notifyDataSetChanged();
+        notifyItemRemoved(getItemCount());
     }
 
     public void clear() {
@@ -62,47 +66,69 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.item_movie, parent, false);
-        v.setOnClickListener(this);
-        return new ViewHolder(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.item_movie, parent, false);
+            v.setOnClickListener(this);
+            return new ItemViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.foot, parent, false);
+            return new FootViewHolder(v);
+        }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        final MovieModel.Result movie = mMovies.get(position);
-        final String title = movie.getTitle();
-        final String language = mContext.getString(R.string.movie_language) + ((TextUtils.equals(movie.getOriginal_language(), "en")) ?
-                "英语" : "中文");
-        final String vote = mContext.getString(R.string.movie_vote) + movie.getVote_average();
-        final String imageName = movie.getPoster_path().substring(1);
-        final String imageUrl = RequestUtil.getImageUrl(imageName);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof ItemViewHolder) {
+            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            final MovieModel.Result movie = mMovies.get(position);
+            final String title = movie.getTitle();
+            final String language = mContext.getString(R.string.movie_language) + ((TextUtils.equals(movie.getOriginal_language(), "en")) ?
+                    "英语" : "中文");
+            final String vote = mContext.getString(R.string.movie_vote) + movie.getVote_average();
+            final String imageName = movie.getPoster_path().substring(1);
+            final String imageUrl = RequestUtil.getImageUrl(imageName);
 
-        holder.movieTitle.setText(title);
-        holder.movieLanguage.setText(language);
-        holder.movieVote.setText(vote);
+            itemViewHolder.movieTitle.setText(title);
+            itemViewHolder.movieLanguage.setText(language);
+            itemViewHolder.movieVote.setText(vote);
 
-        mImageLoader.displayImage(imageUrl, holder.moviePoster, mDisplayImageOptions);
-
+            mImageLoader.displayImage(imageUrl, itemViewHolder.moviePoster, mDisplayImageOptions);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+        return mMovies.size() == 0 ? 0 : mMovies.size() + 1;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemViewType(int position) {
+        if (position + 1 == getItemCount()) {
+            return TYPE_FOOTER;
+        } else {
+            return TYPE_ITEM;
+        }
+    }
+
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
         ImageView moviePoster;
         TextView movieTitle, movieLanguage, movieVote;
         CardView cardView;
 
-        public ViewHolder(View itemView) {
+        public ItemViewHolder(View itemView) {
             super(itemView);
             moviePoster = (ImageView) itemView.findViewById(R.id.item_iv_poster);
             movieTitle = (TextView) itemView.findViewById(R.id.item_tv_title);
             movieLanguage = (TextView) itemView.findViewById(R.id.item_tv_language);
             movieVote = (TextView) itemView.findViewById(R.id.item_tv_vote);
             cardView = (CardView) itemView.findViewById(R.id.cardview);
+        }
+    }
+
+    static class FootViewHolder extends RecyclerView.ViewHolder {
+        public FootViewHolder(View itemView) {
+            super(itemView);
         }
     }
 

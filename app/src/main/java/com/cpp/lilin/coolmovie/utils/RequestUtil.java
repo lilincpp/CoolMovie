@@ -24,6 +24,17 @@ public class RequestUtil {
         return stringBuilder.toString();
     }
 
+    public static String getPopularMovies(final int page) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(MovieApi.SERVICE_URL)
+                .append("/3/movie/popular?")
+                .append("api_key=")
+                .append(MovieApi.API_KEY)
+                .append("&")
+                .append("page=" + page);
+        return stringBuilder.toString();
+    }
+
 
     /**
      * 请求一张图片资源

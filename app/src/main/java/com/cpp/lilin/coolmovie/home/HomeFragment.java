@@ -1,6 +1,5 @@
 package com.cpp.lilin.coolmovie.home;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -33,6 +33,11 @@ import java.util.List;
  * Created by lilin on 2016/7/9.
  */
 public class HomeFragment extends Fragment implements MovieAdapter.LClickListener {
+
+    public static final String TYPE_KEY = "type_key";
+    public static final boolean TYPE_DEFAULT = false;
+    public static final boolean TYPE_FAVORITE = true;
+
     private static final String TAG = HomeFragment.class.getSimpleName();
 
     public static HomeFragment getIntance() {
@@ -42,25 +47,34 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     private RecyclerView mRv;
     private MovieAdapter mMovieAdapter;
     private List<MovieModel.Result> mMovies;
+    private ProgressBar mLoading;
+
+    private int mCurrentPage = 1;
+    private boolean mIsLoading = false;
+
+    private boolean mType = TYPE_DEFAULT;
 
     public enum SORT_METHOD {
         POPULAR, VOTE
     }
 
-    private static final int MESSAGE_NOTIFY_DATA_SET_CHANGE = 0;
+    private static final int MESSAGE_LOADING_GONE = 0;
     private static final int MESSAGE_TOAST = 1;
+    private static final int MESSAGE_LOAD_MORE_SUCCESS = 2;
 
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_NOTIFY_DATA_SET_CHANGE:
-                    Log.e(TAG, "MESSAGE_NOTIFY_DATA_SET_CHANGE");
-                    mMovieAdapter.notifyDataSetChanged();
+                case MESSAGE_LOADING_GONE:
+                    mLoading.setVisibility(View.GONE);
                     break;
                 case MESSAGE_TOAST:
-                    Log.e(TAG, "MESSAGE_TOAST");
                     ToastUtil.show(getActivity(), msg.arg1);
+                    break;
+                case MESSAGE_LOAD_MORE_SUCCESS:
+                    mCurrentPage++;
+                    mIsLoading = false;
                     break;
             }
         }
@@ -76,23 +90,54 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null) {
+            mType = getArguments().getBoolean(TYPE_KEY);
+        }
+        mLoading = (ProgressBar) view.findViewById(R.id.loading);
         mMovies = new ArrayList<>();
         mMovieAdapter = new MovieAdapter(getActivity(), mMovies);
         mMovieAdapter.setClickListener(this);
         mRv = (RecyclerView) view.findViewById(R.id.rv_movies);
-        mRv.setLayoutManager(new GridLayoutManager(mRv.getContext(), 2));
+        mGridLayoutManager = new GridLayoutManager(mRv.getContext(), 2);
+        mRv.setLayoutManager(mGridLayoutManager);
         mRv.setAdapter(mMovieAdapter);
+
+        mRv.addOnScrollListener(mOnScrollListener);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        requestPopularMovies();
+        if (mType) {
+            requestFavoriteMovies();
+        } else {
+            if (mMovies.size() == 0) {
+                requestPopularMovies();
+            }
+        }
     }
 
+    private GridLayoutManager mGridLayoutManager;
+
+    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int lastitem = mGridLayoutManager.findLastVisibleItemPosition();
+            if (dy > 0 && lastitem == mMovieAdapter.getItemCount() - 1 && !mIsLoading && !mType) {
+                Log.e(TAG, "加载更多...");
+                mIsLoading = true;
+                requestPopularMovies(mCurrentPage + 1);
+            }
+        }
+    };
+
     public void refresh() {
-        mMovieAdapter.clear();
-        requestPopularMovies();
+        if (!mType) {
+            mMovieAdapter.clear();
+            requestPopularMovies();
+        }
     }
 
     public void sort(SORT_METHOD sort) {
@@ -100,15 +145,20 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         mMovieAdapter.update(mMovies);
     }
 
+    /**
+     * 请求网络数据
+     */
     public synchronized void requestPopularMovies() {
-        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(), new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(), new Response
+                .Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(TAG, response);
+//                Log.e(TAG, response);
                 Gson gson = new Gson();
                 MovieModel movieModel = gson.fromJson(response, MovieModel.class);
                 mMovies = movieModel.getResults();
                 mMovieAdapter.update(mMovies);
+                mHandler.obtainMessage(MESSAGE_LOADING_GONE).sendToTarget();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -119,11 +169,42 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
+    public synchronized void requestPopularMovies(final int page) {
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(page), new Response
+                .Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Gson gson = new Gson();
+                MovieModel movieModel = gson.fromJson(response, MovieModel.class);
+                mMovies.addAll(movieModel.getResults());
+                mMovieAdapter.update(mMovies);
+                mHandler.obtainMessage(MESSAGE_LOAD_MORE_SUCCESS).sendToTarget();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mHandler.obtainMessage(MESSAGE_TOAST, R.string.error_request, -1, null).sendToTarget();
+            }
+        });
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
+    }
+
+    /**
+     * 获取收藏的电影
+     */
+    public synchronized void requestFavoriteMovies() {
+        List<MovieModel.Result> results = MovieModel.Result.getAll();
+        mMovies = results;
+        mMovieAdapter.update(mMovies);
+        mHandler.obtainMessage(MESSAGE_LOADING_GONE).sendToTarget();
+    }
+
     @Override
     public void onClick(int position, View v, MovieModel.Result movie) {
         ImageView imageView = (ImageView) v.findViewById(R.id.item_iv_poster);
         Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
         intent.putExtra("movie", movie);
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "share_poster").toBundle());
+//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "share_poster").toBundle());
+        startActivity(intent);
     }
 }

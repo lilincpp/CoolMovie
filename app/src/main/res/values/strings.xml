@@ -3,6 +3,7 @@
 
     <!--home-->
     <string name="home.title">流行电影</string>
+    <string name="home.load_more">正在加载...</string>
 
     <!--detail-->
     <string name="detail.empty"></string>
@@ -11,12 +12,18 @@
     <string name="detail.back">返回</string>
     <string name="detail.no_review">暂无评论</string>
     <string name="detail.no_trailer">暂无预告片</string>
+    <string name="detail.loading">加载中...</string>
     <!--movie-->
     <string name="movie.title">片名:</string>
     <string name="movie.vote">平均得分:</string>
     <string name="movie.language">语言:</string>
     <string name="movie.release_data">上映日期:</string>
     <string name="movie.overview">剧情简介:</string>
+
+    <!--favorite-->
+    <string name="favorite.title">收藏的电影</string>
+    <string name="favorite.saved">已收藏</string>
+    <string name="favorite.remove">已取消收藏</string>
 
     <!--error-->
     <string name="error.request">请求服务器失败</string>

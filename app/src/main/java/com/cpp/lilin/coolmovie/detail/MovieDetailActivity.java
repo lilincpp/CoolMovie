@@ -1,20 +1,25 @@
 package com.cpp.lilin.coolmovie.detail;
 
+import android.animation.Animator;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.activeandroid.query.Delete;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -26,6 +31,8 @@ import com.cpp.lilin.coolmovie.utils.ToastUtil;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
@@ -43,6 +50,8 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     private RecyclerView mRvVideo;
     private TrailerAdapter mTrailerAdapter;
     private LinearLayout mLinearLayout;
+
+    private FloatingActionButton mFabFavorite;
 
 
     private CollapsingToolbarLayoutState state;
@@ -88,6 +97,12 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
+        mFabFavorite = (FloatingActionButton) findViewById(R.id.fab_favorite);
+        mFabFavorite.setOnClickListener(this);
+
+        mFabFavorite.setTag(MovieModel.Result.isFavorited(mMovie.getMovieId()));
+        changeFavoriteFabStatus((Boolean) mFabFavorite.getTag());
+
         mMovieBackground = (ImageView) findViewById(R.id.movie_background);
         mTvMovieTitle = (TextView) findViewById(R.id.movie_title);
         mTvMovieReleaseData = (TextView) findViewById(R.id.movie_release_data);
@@ -120,9 +135,37 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         //加载背景
         final String fileName = mMovie.getBackdrop_path().substring(1);
         final String imageUrl = RequestUtil.getImageUrl(fileName);
-        mImageLoader.displayImage(imageUrl, mMovieBackground, mDisplayImageOptions);
+//        mImageLoader.displayImage(imageUrl, mMovieBackground, mDisplayImageOptions);
+        mImageLoader.loadImage(imageUrl, mDisplayImageOptions, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                int centerX = mMovieBackground.getWidth() / 2;
+                int centerY = mMovieBackground.getHeight() / 2;
+                int maxRadius = Math.max(mMovieBackground.getWidth(), mMovieBackground.getHeight());
+
+                mMovieBackground.setImageBitmap(loadedImage);
+                Animator animator = ViewAnimationUtils.createCircularReveal(mMovieBackground, centerX, centerY, 0, maxRadius);
+                animator.setDuration(1200);
+                animator.start();
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+
+            }
+        });
         //请求预告
-        StringRequest videoRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getVideos(mMovie.getId()), new Response
+        StringRequest videoRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getVideos(mMovie.getMovieId()), new Response
                 .Listener<String>() {
 
 
@@ -134,6 +177,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                     mHandler.obtainMessage(MESSAGE_NO_TRAILER).sendToTarget();
                 } else {
                     if (mTrailerAdapter != null) {
+                        mHandler.obtainMessage(MESSAGE_ADD_TRAILER).sendToTarget();
                         mTrailerAdapter.clear();
                         mTrailerAdapter.update(trailerModel.getResults());
                     }
@@ -146,7 +190,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
         //请求评论
-        StringRequest reviewRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getReviews(mMovie.getId()), new Response
+        StringRequest reviewRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getReviews(mMovie.getMovieId()), new Response
                 .Listener<String>() {
 
 
@@ -170,6 +214,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     private static final int MESSAGE_REQUEST_ERROR = 1;
     private static final int MESSAGE_ADD_REVIEW = 2;
     private static final int MESSAGE_NO_TRAILER = 3;
+    private static final int MESSAGE_ADD_TRAILER = 4;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -183,6 +228,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                     if (reviewModel.getResults().size() == 0) {
                         addEmptyView();
                     } else {
+                        mTvNoReview.setVisibility(View.GONE);
                         for (ReviewModel.Result result : reviewModel.getResults()) {
                             addReview(result);
                         }
@@ -190,13 +236,18 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                     break;
                 case MESSAGE_NO_TRAILER:
                     mRvVideo.setVisibility(View.GONE);
+                    mTvNoTrailer.setText(R.string.detail_no_trailer);
                     mTvNoTrailer.setVisibility(View.VISIBLE);
+                    break;
+                case MESSAGE_ADD_TRAILER:
+                    mTvNoTrailer.setVisibility(View.GONE);
                     break;
             }
         }
     };
 
     private synchronized void addEmptyView() {
+        mTvNoReview.setText(R.string.detail_no_review);
         mTvNoReview.setVisibility(View.VISIBLE);
     }
 
@@ -211,7 +262,6 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         mLinearLayout.addView(view);
 
         View lineView = LayoutInflater.from(this).inflate(R.layout.item_line, null);
-
         mLinearLayout.addView(lineView);
 
     }
@@ -219,6 +269,30 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.fab_favorite:
+                boolean checked = (boolean) mFabFavorite.getTag();
+                if (!checked) {
+                    if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
+                        mMovie.save();
+                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_saved);
+                    }
+                } else {
+                    if (MovieModel.Result.isFavorited(mMovie.getMovieId())) {
+                        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_remove);
+                    }
+                }
+                mFabFavorite.setTag(!checked);
+                changeFavoriteFabStatus((Boolean) mFabFavorite.getTag());
+                break;
+        }
+    }
+
+    private synchronized void changeFavoriteFabStatus(final boolean checked) {
+        if (checked) {
+            mFabFavorite.setColorFilter(Color.RED);
+        } else {
+            mFabFavorite.setColorFilter(Color.GRAY);
         }
     }
 }

@@ -14,11 +14,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
+        <!--数据库配置-->
         <meta-data
-            android:name="movie_api_key"
-            android:value="Your API KEY"
+            android:name="AA_DB_NAME"
+            android:value="LCoolMovie.db"
+            />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1"
             />
 
+        <!--主视图-->
         <activity
             android:name=".home.MainActivity"
             android:screenOrientation="portrait">
@@ -28,9 +34,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!--电影详细信息-->
         <activity
             android:name=".detail.MovieDetailActivity"
             android:label="@string/detail.empty"
+            android:screenOrientation="portrait"/>
+        <!--收藏电影-->
+        <activity
+            android:name=".favorite.FavoriteActivity"
             android:screenOrientation="portrait"/>
     </application>
 

@@ -1,5 +1,6 @@
 package com.cpp.lilin.coolmovie.home;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 
 import com.cpp.lilin.coolmovie.BaseActivity;
 import com.cpp.lilin.coolmovie.R;
+import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -88,6 +90,9 @@ public class MainActivity extends BaseActivity {
                 if (homeFragment != null) {
                     homeFragment.sort(HomeFragment.SORT_METHOD.VOTE);
                 }
+                break;
+            case R.id.menu_loved:
+                startActivity(new Intent(MainActivity.this, FavoriteActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/detail_line"
                 android:layout_centerHorizontal="true"
-                android:layout_margin="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/detail.trailer"
                 android:textSize="16sp"/>
 
@@ -121,9 +121,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_trailer_title"
                 android:layout_margin="16dp"
-                android:text="@string/detail.no_trailer"
+                android:gravity="center"
+                android:text="@string/detail.loading"
                 android:textSize="20sp"
-                android:visibility="gone"/>
+                />
 
             <View
                 android:id="@+id/detail_line2"
@@ -146,9 +147,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/detail.no_review"
+                    android:text="@string/detail.loading"
                     android:textSize="20sp"
-                    android:visibility="gone"/>
+                   />
             </LinearLayout>
 
         </RelativeLayout>
@@ -160,6 +161,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="16dp"
+        style="@style/FabStyle"
         android:src="@drawable/ic_add_favorite"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right"

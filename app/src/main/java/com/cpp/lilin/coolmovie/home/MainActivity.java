@@ -23,18 +23,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private FRAGMENTS mCurrentFragment = FRAGMENTS.HOME_FRAGMENT;
 
+    private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.home_title);
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(R.string.home_title);
+        mToolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(mToolbar);
 
-        toolbar.setOnClickListener(this);
+        mToolbar.setOnClickListener(this);
 
 
         HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.container);

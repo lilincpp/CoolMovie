@@ -141,6 +141,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
 
     private GridLayoutManager mGridLayoutManager;
 
+
     /**
      * 当用户滑到最后时，自动加载后一页内容
      */
@@ -224,7 +225,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                mHandler.obtainMessage(MESSAGE_TOAST, R.string.error_request, -1, null).sendToTarget();
+                mHandler.obtainMessage(MESSAGE_TOAST, R.string.error_request, -1).sendToTarget();
             }
         });
         Volley.newRequestQueue(getActivity()).add(stringRequest);

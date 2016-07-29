@@ -38,7 +38,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void update(List<MovieModel.Result> movies) {
         mMovies = movies;
         notifyDataSetChanged();
-        notifyItemRemoved(getItemCount());
+//        notifyItemRemoved(getItemCount());
     }
 
     public void clear() {

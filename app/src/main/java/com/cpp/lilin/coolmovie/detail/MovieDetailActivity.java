@@ -51,7 +51,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     private MovieModel.Result mMovie;
     private RecyclerView mRvVideo;
     private TrailerAdapter mTrailerAdapter;
-    private LinearLayout mLinearLayout;
+    private LinearLayout mLayReviewContent;
 
     private FloatingActionButton mFabFavorite;
 
@@ -119,12 +119,11 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         mRvVideo.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
         mRvVideo.setAdapter(mTrailerAdapter);
 
-        mLinearLayout = (LinearLayout) findViewById(R.id.lay_review_content);
-
+        mLayReviewContent = (LinearLayout) findViewById(R.id.lay_review_content);
 
         final String title = mMovie.getTitle();
-        final String vote = getString(R.string.movie_vote) +"\t"+ mMovie.getVote_average();
-        final String releaseData = getString(R.string.movie_release_data)+"\t"+ mMovie.getRelease_date();
+        final String vote = getString(R.string.movie_vote) + "\t" + mMovie.getVote_average();
+        final String releaseData = getString(R.string.movie_release_data) + "\t" + mMovie.getRelease_date();
         final String overview = mMovie.getOverview();
 
         mTvMovieTitle.setText(title);
@@ -218,6 +217,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     private static final int MESSAGE_ADD_REVIEW = 2;
     private static final int MESSAGE_NO_TRAILER = 3;
     private static final int MESSAGE_ADD_TRAILER = 4;
+    private static final int MESSAGE_TOAST = 5;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -244,6 +244,16 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                 case MESSAGE_ADD_TRAILER:
                     mTvTrailerTitle.setText(R.string.detail_trailer);
                     break;
+                case MESSAGE_TOAST:
+                    Snackbar.make(mLayReviewContent, msg.arg1, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.message_confirm, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            })
+                            .show();
+                    break;
             }
         }
     };
@@ -261,10 +271,10 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         tvName.setText(result.getAuthor());
         tvContent.setText(result.getContent());
 
-        mLinearLayout.addView(view);
+        mLayReviewContent.addView(view);
 
         View lineView = LayoutInflater.from(this).inflate(R.layout.item_line, null);
-        mLinearLayout.addView(lineView);
+        mLayReviewContent.addView(lineView);
 
     }
 
@@ -272,36 +282,16 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_favorite:
-                boolean checked = (boolean) mFabFavorite.getTag();
-                if (!checked) {
-                    if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
-                        //在数据库中不存在时插入数据库
-                        mMovie.save();
-//                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_saved);
-                        Snackbar.make(v, R.string.favorite_saved, Snackbar.LENGTH_SHORT)
-                                .setAction(R.string.message_confirm, new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-
-                                    }
-                                })
-                                .show();
-                    }
+                boolean checked = !(boolean) mFabFavorite.getTag();
+                if (checked) {
+                    addMovieToFavorites();
+                    mHandler.obtainMessage(MESSAGE_TOAST, R.string.favorite_saved, -1).sendToTarget();
                 } else {
-                    //从数据库中删除该电影
-                    new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
-//                    ToastUtil.show(MovieDetailActivity.this, R.string.favorite_remove);
-                    Snackbar.make(v, R.string.favorite_remove, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.message_confirm, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                }
-                            })
-                            .show();
+                    removeMovieFromFavorites();
+                    mHandler.obtainMessage(MESSAGE_TOAST, R.string.favorite_remove, -1).sendToTarget();
                 }
-                mFabFavorite.setTag(!checked);
-                changeFavoriteFabStatus(!checked);
+                mFabFavorite.setTag(checked);
+                changeFavoriteFabStatus(checked);
                 break;
         }
     }
@@ -312,5 +302,28 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         } else {
             mFabFavorite.setColorFilter(Color.GRAY);
         }
+    }
+
+    private synchronized void addMovieToFavorites() {
+        if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
+            mMovie.save();
+        }
+    }
+
+    private synchronized void removeMovieFromFavorites() {
+        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+    }
+
+    @Override
+    protected void onDestroy() {
+        boolean ok = (boolean) mFabFavorite.getTag();
+
+        if (ok) {
+            addMovieToFavorites();
+        } else {
+            removeMovieFromFavorites();
+        }
+
+        super.onDestroy();
     }
 }

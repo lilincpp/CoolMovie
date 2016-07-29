@@ -123,8 +123,8 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
 
         final String title = mMovie.getTitle();
-        final String vote = getString(R.string.movie_vote) + mMovie.getVote_average();
-        final String releaseData = getString(R.string.movie_release_data) + mMovie.getRelease_date();
+        final String vote = getString(R.string.movie_vote) +"\t"+ mMovie.getVote_average();
+        final String releaseData = getString(R.string.movie_release_data)+"\t"+ mMovie.getRelease_date();
         final String overview = mMovie.getOverview();
 
         mTvMovieTitle.setText(title);

@@ -2,6 +2,7 @@ package com.cpp.lilin.coolmovie.favorite;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +18,7 @@ import com.cpp.lilin.coolmovie.home.HomeFragment;
 /**
  * Created by lilin on 2016/7/28.
  */
-public class FavoriteActivity extends BaseActivity {
+public class FavoriteActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +29,8 @@ public class FavoriteActivity extends BaseActivity {
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle(R.string.favorite_title);
         setSupportActionBar(toolbar);
+
+        toolbar.setOnClickListener(this);
 
         toolbar.setNavigationIcon(R.drawable.ic_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -82,5 +85,29 @@ public class FavoriteActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private static final long DOUBLE_CLICK_TIME = 240;
+    private final Handler mHandler = new Handler();
+    private int mClickCount = 0;
+    private final Runnable mCancelClick = new Runnable() {
+        @Override
+        public void run() {
+            mClickCount = 0;
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        switch (v.getId()) {
+            case R.id.toolbar:
+                mClickCount++;
+                if (mClickCount == 2 && homeFragment != null && homeFragment.isVisible()) {
+                    homeFragment.moveToTop();
+                }
+                mHandler.postDelayed(mCancelClick, DOUBLE_CLICK_TIME);
+                break;
+        }
     }
 }

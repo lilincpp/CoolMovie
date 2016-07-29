@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,6 +171,12 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         mMovieAdapter.update(mMovies);
     }
 
+    public void moveToTop() {
+        if (mRv != null) {
+            mRv.scrollToPosition(0);
+        }
+    }
+
     /**
      * 请求流行电影列表
      */
@@ -184,7 +189,6 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
                 Gson gson = new Gson();
                 MovieModel movieModel = gson.fromJson(response, MovieModel.class);
                 mMaxPage = Integer.decode(movieModel.getTotal_pages());
-                Log.e(TAG, "max page:" + mMaxPage);
                 mMovies = movieModel.getResults();
                 mMovieAdapter.update(mMovies);
                 mHandler.obtainMessage(MESSAGE_LOADING_GONE).sendToTarget();

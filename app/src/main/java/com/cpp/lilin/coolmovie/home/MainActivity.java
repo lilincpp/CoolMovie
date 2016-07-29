@@ -3,17 +3,19 @@ package com.cpp.lilin.coolmovie.home;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.cpp.lilin.coolmovie.BaseActivity;
 import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private enum FRAGMENTS {
         HOME_FRAGMENT
@@ -31,6 +33,9 @@ public class MainActivity extends BaseActivity {
         toolbar.setTitle(R.string.home_title);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
+
+        toolbar.setOnClickListener(this);
+
 
         HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.container);
 
@@ -96,5 +101,30 @@ public class MainActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private static final long DOUBLE_CLICK_TIME = 240;
+    private final Handler mHandler = new Handler();
+    private int mClickCount = 0;
+    private final Runnable mCancelClick = new Runnable() {
+        @Override
+        public void run() {
+            mClickCount = 0;
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        switch (v.getId()) {
+            case R.id.toolbar:
+                mClickCount++;
+                if (mClickCount == 2 && homeFragment != null && homeFragment.isVisible()) {
+                    homeFragment.moveToTop();
+                }
+                mHandler.postDelayed(mCancelClick, DOUBLE_CLICK_TIME);
+                break;
+        }
     }
 }

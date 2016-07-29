@@ -103,7 +103,9 @@
                 android:layout_below="@+id/detail_line"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
-                android:text="@string/detail.trailer"
+                android:gravity="center"
+                android:maxEms="10"
+                android:text="@string/detail.trailer_and_load"
                 android:textSize="16sp"/>
 
             <android.support.v7.widget.RecyclerView
@@ -115,16 +117,6 @@
                 android:layout_marginStart="8dp">
             </android.support.v7.widget.RecyclerView>
 
-            <TextView
-                android:id="@+id/tv_no_trailer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_trailer_title"
-                android:layout_margin="16dp"
-                android:gravity="center"
-                android:text="@string/detail.loading"
-                android:textSize="20sp"
-                />
 
             <View
                 android:id="@+id/detail_line2"
@@ -134,13 +126,23 @@
                 android:layout_margin="16dp"
                 android:background="@android:color/darker_gray"/>
 
+
             <LinearLayout
                 android:id="@+id/lay_review_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_line2"
-                android:layout_margin="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@string/detail.review"
+                    android:textSize="16sp"/>
 
                 <TextView
                     android:id="@+id/tv_no_review"
@@ -149,7 +151,7 @@
                     android:gravity="center"
                     android:text="@string/detail.loading"
                     android:textSize="20sp"
-                   />
+                    />
             </LinearLayout>
 
         </RelativeLayout>
@@ -161,10 +163,10 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="16dp"
-        style="@style/FabStyle"
         android:src="@drawable/ic_add_favorite"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right"
+        app:theme="@style/FabStyle"
         />
 
 

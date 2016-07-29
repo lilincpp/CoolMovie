@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +24,6 @@ import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.detail.MovieDetailActivity;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.SortUtil;
-import com.cpp.lilin.coolmovie.utils.ToastUtil;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -35,8 +35,14 @@ import java.util.List;
 public class HomeFragment extends Fragment implements MovieAdapter.LClickListener {
 
     public static final String TYPE_KEY = "type_key";
-    public static final boolean TYPE_DEFAULT = false;
-    public static final boolean TYPE_FAVORITE = true;
+    /**
+     * 默认页面-请求网络数据及自动加载
+     */
+    public static final boolean TYPE_DEFAULT = true;
+    /**
+     * 收藏页面-请求数据库数据
+     */
+    public static final boolean TYPE_FAVORITE = false;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
@@ -48,8 +54,17 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     private MovieAdapter mMovieAdapter;
     private List<MovieModel.Result> mMovies;
     private ProgressBar mLoading;
-
+    /**
+     * 流行电影当前页数
+     */
     private int mCurrentPage = 1;
+    /**
+     * 流行电影API最大的页数
+     */
+    private int mMaxPage = 1;
+    /**
+     * 是否在加载更多
+     */
     private boolean mIsLoading = false;
 
     private boolean mType = TYPE_DEFAULT;
@@ -70,7 +85,14 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
                     mLoading.setVisibility(View.GONE);
                     break;
                 case MESSAGE_TOAST:
-                    ToastUtil.show(getActivity(), msg.arg1);
+                    Snackbar.make(mRv, msg.arg1, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.message_confirm, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            })
+                            .show();
                     break;
                 case MESSAGE_LOAD_MORE_SUCCESS:
                     mCurrentPage++;
@@ -95,7 +117,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         }
         mLoading = (ProgressBar) view.findViewById(R.id.loading);
         mMovies = new ArrayList<>();
-        mMovieAdapter = new MovieAdapter(getActivity(), mMovies);
+        mMovieAdapter = new MovieAdapter(getActivity(), mMovies, mType);
         mMovieAdapter.setClickListener(this);
         mRv = (RecyclerView) view.findViewById(R.id.rv_movies);
         mGridLayoutManager = new GridLayoutManager(mRv.getContext(), 2);
@@ -110,31 +132,36 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     public void onResume() {
         super.onResume();
         if (mType) {
-            requestFavoriteMovies();
-        } else {
             if (mMovies.size() == 0) {
                 requestPopularMovies();
             }
+        } else {
+            requestFavoriteMovies();
         }
     }
 
     private GridLayoutManager mGridLayoutManager;
 
+    /**
+     * 当用户滑到最后时，自动加载后一页内容
+     */
     private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             int lastitem = mGridLayoutManager.findLastVisibleItemPosition();
-            if (dy > 0 && lastitem == mMovieAdapter.getItemCount() - 1 && !mIsLoading && !mType) {
-                Log.e(TAG, "加载更多...");
+            if (dy > 0 && lastitem == mMovieAdapter.getItemCount() - 1 && !mIsLoading && mType) {
                 mIsLoading = true;
                 requestPopularMovies(mCurrentPage + 1);
             }
         }
     };
 
+    /**
+     * 刷新页面，将会导致数据清空
+     */
     public void refresh() {
-        if (!mType) {
+        if (mType) {
             mMovieAdapter.clear();
             requestPopularMovies();
         }
@@ -146,7 +173,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     }
 
     /**
-     * 请求网络数据
+     * 请求流行电影列表
      */
     public synchronized void requestPopularMovies() {
         StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(), new Response
@@ -156,6 +183,8 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
 //                Log.e(TAG, response);
                 Gson gson = new Gson();
                 MovieModel movieModel = gson.fromJson(response, MovieModel.class);
+                mMaxPage = Integer.decode(movieModel.getTotal_pages());
+                Log.e(TAG, "max page:" + mMaxPage);
                 mMovies = movieModel.getResults();
                 mMovieAdapter.update(mMovies);
                 mHandler.obtainMessage(MESSAGE_LOADING_GONE).sendToTarget();
@@ -169,7 +198,15 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
+    /**
+     * 请求流行电影列表
+     *
+     * @param page 页数
+     */
     public synchronized void requestPopularMovies(final int page) {
+        if (page > mMaxPage) {
+            return;
+        }
         StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(page), new Response
                 .Listener<String>() {
             @Override

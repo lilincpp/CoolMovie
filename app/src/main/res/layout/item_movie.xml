@@ -27,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/item_iv_poster"
                 android:padding="4dp"
+                android:visibility="gone"
                 android:singleLine="true"
                 android:textSize="14sp"/>
 
@@ -36,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/item_tv_title"
                 android:padding="4dp"
+                android:visibility="gone"
                 android:singleLine="true"
                 android:textSize="14sp"/>
 
@@ -45,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/item_tv_language"
                 android:padding="4dp"
+                android:visibility="gone"
                 android:textSize="12sp"/>
 
         </RelativeLayout>

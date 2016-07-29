@@ -33,6 +33,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private LClickListener mLClickListener;
     private RecyclerView mRecyclerView;
 
+    private boolean mAddFooter = true;
+
     public void update(List<MovieModel.Result> movies) {
         mMovies = movies;
         notifyDataSetChanged();
@@ -52,10 +54,11 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mLClickListener = clickListener;
     }
 
-    public MovieAdapter(Context context, List<MovieModel.Result> movies) {
+    public MovieAdapter(Context context, List<MovieModel.Result> movies, boolean addFooter) {
         mContext = context;
         mMovies = movies;
         mImageLoader = ImageLoader.getInstance();
+        mAddFooter = addFooter;
 
         mDisplayImageOptions = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.ic_download)
@@ -99,13 +102,25 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mMovies.size() == 0 ? 0 : mMovies.size() + 1;
+        if (mAddFooter) {
+            //添加额外的item-“加载更多”
+            return mMovies.size() == 0 ? 0 : mMovies.size() + 1;
+        } else {
+            //无需添加额外的item
+            return mMovies.size();
+        }
+
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position + 1 == getItemCount()) {
-            return TYPE_FOOTER;
+        if (mAddFooter) {
+            if (position + 1 == getItemCount()) {
+                //如果当前position已经是最后一个时，显示“加载更多”的item
+                return TYPE_FOOTER;
+            } else {
+                return TYPE_ITEM;
+            }
         } else {
             return TYPE_ITEM;
         }

@@ -19,7 +19,7 @@ public class MainActivity extends BaseActivity {
         HOME_FRAGMENT
     }
 
-    private FRAGMENTS mCurrentFragment;
+    private FRAGMENTS mCurrentFragment = FRAGMENTS.HOME_FRAGMENT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

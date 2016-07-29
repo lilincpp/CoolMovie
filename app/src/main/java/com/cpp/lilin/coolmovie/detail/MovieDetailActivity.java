@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +45,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
     private ImageView mMovieBackground;
-    private TextView mTvMovieTitle, mTvMovieReleaseData, mTvMovieVote, mTvMovieOverView, mTvNoReview, mTvNoTrailer;
+    private TextView mTvMovieTitle, mTvMovieReleaseData, mTvMovieVote, mTvMovieOverView, mTvNoReview, mTvTrailerTitle;
     private ImageLoader mImageLoader;
     private DisplayImageOptions mDisplayImageOptions;
     private MovieModel.Result mMovie;
@@ -97,6 +99,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
+
         mFabFavorite = (FloatingActionButton) findViewById(R.id.fab_favorite);
         mFabFavorite.setOnClickListener(this);
 
@@ -109,7 +112,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         mTvMovieVote = (TextView) findViewById(R.id.movie_vote);
         mTvMovieOverView = (TextView) findViewById(R.id.movie_overview);
         mTvNoReview = (TextView) findViewById(R.id.tv_no_review);
-        mTvNoTrailer = (TextView) findViewById(R.id.tv_no_trailer);
+        mTvTrailerTitle = (TextView) findViewById(R.id.tv_trailer_title);
 
         mRvVideo = (RecyclerView) findViewById(R.id.rv_videos);
         mTrailerAdapter = new TrailerAdapter(new ArrayList<TrailerModel.Result>());
@@ -235,12 +238,11 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                     }
                     break;
                 case MESSAGE_NO_TRAILER:
+                    mTvTrailerTitle.setText(R.string.detail_trailer_and_empty);
                     mRvVideo.setVisibility(View.GONE);
-                    mTvNoTrailer.setText(R.string.detail_no_trailer);
-                    mTvNoTrailer.setVisibility(View.VISIBLE);
                     break;
                 case MESSAGE_ADD_TRAILER:
-                    mTvNoTrailer.setVisibility(View.GONE);
+                    mTvTrailerTitle.setText(R.string.detail_trailer);
                     break;
             }
         }
@@ -273,24 +275,40 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                 boolean checked = (boolean) mFabFavorite.getTag();
                 if (!checked) {
                     if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
+                        //在数据库中不存在时插入数据库
                         mMovie.save();
-                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_saved);
+//                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_saved);
+                        Snackbar.make(v, R.string.favorite_saved, Snackbar.LENGTH_SHORT)
+                                .setAction(R.string.message_confirm, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                    }
+                                })
+                                .show();
                     }
                 } else {
-                    if (MovieModel.Result.isFavorited(mMovie.getMovieId())) {
-                        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
-                        ToastUtil.show(MovieDetailActivity.this, R.string.favorite_remove);
-                    }
+                    //从数据库中删除该电影
+                    new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+//                    ToastUtil.show(MovieDetailActivity.this, R.string.favorite_remove);
+                    Snackbar.make(v, R.string.favorite_remove, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.message_confirm, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            })
+                            .show();
                 }
                 mFabFavorite.setTag(!checked);
-                changeFavoriteFabStatus((Boolean) mFabFavorite.getTag());
+                changeFavoriteFabStatus(!checked);
                 break;
         }
     }
 
     private synchronized void changeFavoriteFabStatus(final boolean checked) {
         if (checked) {
-            mFabFavorite.setColorFilter(Color.RED);
+            mFabFavorite.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
         } else {
             mFabFavorite.setColorFilter(Color.GRAY);
         }

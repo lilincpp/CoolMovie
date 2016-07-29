@@ -24,6 +24,12 @@ public class RequestUtil {
         return stringBuilder.toString();
     }
 
+    /**
+     * 请求当前的流行电影
+     *
+     * @param page 流行电影的页数
+     * @return
+     */
     public static String getPopularMovies(final int page) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)

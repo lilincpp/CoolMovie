@@ -33,7 +33,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"></android.support.v7.widget.Toolbar>
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:layout_collapseMode="pin">
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -158,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/detail.loading"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     />
             </LinearLayout>
 

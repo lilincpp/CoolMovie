@@ -235,6 +235,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
      * 获取收藏的电影
      */
     public synchronized void requestFavoriteMovies() {
+        mMovieAdapter.clear();
         List<MovieModel.Result> results = MovieModel.Result.getAll();
         mMovies = results;
         mMovieAdapter.update(mMovies);

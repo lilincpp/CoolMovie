@@ -3,6 +3,7 @@ package com.cpp.lilin.coolmovie.detail;
 import android.animation.Animator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -69,6 +71,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setContentView(R.layout.activity_detail);
+
 
         init();
         initView();
@@ -157,8 +160,10 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
                 mMovieBackground.setImageBitmap(loadedImage);
                 Animator animator = ViewAnimationUtils.createCircularReveal(mMovieBackground, centerX, centerY, 0, maxRadius);
-                animator.setDuration(1200);
+                animator.setDuration(800);
                 animator.start();
+
+                mHandler.obtainMessage(MESSAGE_LOAD_BACKDROP_SUCCESS, loadedImage).sendToTarget();
             }
 
             @Override
@@ -166,6 +171,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
             }
         });
+
         //请求预告
         StringRequest videoRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getVideos(mMovie.getMovieId()), new Response
                 .Listener<String>() {
@@ -218,6 +224,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     private static final int MESSAGE_NO_TRAILER = 3;
     private static final int MESSAGE_ADD_TRAILER = 4;
     private static final int MESSAGE_TOAST = 5;
+    private static final int MESSAGE_LOAD_BACKDROP_SUCCESS = 6;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -254,9 +261,28 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                             })
                             .show();
                     break;
+                case MESSAGE_LOAD_BACKDROP_SUCCESS:
+//                    applePaletter((Bitmap) msg.obj);
+                    break;
             }
         }
     };
+
+    /**
+     * 通过着色器获取背景图片的颜色，从而改变界面风格。由于配色的搭配不太好看，先弃用
+     *
+     * @param bitmap
+     */
+    private void applePaletter(Bitmap bitmap) {
+        if (bitmap != null) {
+            Palette palette = Palette.from(bitmap).generate();
+            getWindow().setBackgroundDrawable(new ColorDrawable(palette.getDarkMutedColor(Color.WHITE)));
+            mTvMovieTitle.setTextColor(palette.getMutedColor(Color.BLACK));
+            mTvMovieVote.setTextColor(palette.getMutedColor(Color.BLACK));
+            mTvMovieReleaseData.setTextColor(palette.getMutedColor(Color.BLACK));
+            mTvMovieOverView.setTextColor(palette.getVibrantColor(Color.BLACK));
+        }
+    }
 
     private synchronized void addEmptyView() {
         mTvNoReview.setText(R.string.detail_no_review);

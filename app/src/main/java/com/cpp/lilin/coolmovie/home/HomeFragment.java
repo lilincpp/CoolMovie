@@ -247,7 +247,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         ImageView imageView = (ImageView) v.findViewById(R.id.item_iv_poster);
         Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
         intent.putExtra("movie", movie);
-//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "share_poster").toBundle());
+//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "share").toBundle());
         startActivity(intent);
     }
 }

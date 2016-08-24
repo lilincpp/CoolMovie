@@ -6,7 +6,7 @@ package com.cpp.lilin.coolmovie.constants;
 public class MovieApi {
     private MovieApi(){}
 
-    public static final String API_KEY="96441cf3db55ee634a476c19fc403791";
+    public static final String API_KEY="";
 
     public static final String SERVICE_URL = "https://api.themoviedb.org";
 

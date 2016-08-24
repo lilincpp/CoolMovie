@@ -45,11 +45,11 @@ public class SortUtil {
     public static void sort(List<MovieModel.Result> movies, HomeFragment.SORT_METHOD sort_method) {
         switch (sort_method) {
             case POPULAR:
-                Comparator comparatorPopular = new PopularSort();
+                PopularSort comparatorPopular = new PopularSort();
                 Collections.sort(movies, comparatorPopular);
                 break;
             case VOTE:
-                Comparator comparatorVote = new VoteSort();
+                VoteSort comparatorVote = new VoteSort();
                 Collections.sort(movies, comparatorVote);
                 break;
         }

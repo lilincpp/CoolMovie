@@ -27,7 +27,7 @@
         <!--主视图-->
         <activity
             android:name=".home.MainActivity"
-            android:screenOrientation="portrait">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -39,11 +39,11 @@
             android:name=".detail.MovieDetailActivity"
             android:label="@string/detail.empty"
             android:parentActivityName=".home.MainActivity"
-            android:screenOrientation="portrait"/>
+            />
         <!--收藏电影-->
         <activity
             android:name=".favorite.FavoriteActivity"
-            android:screenOrientation="portrait"/>
+            />
     </application>
 
 </manifest>

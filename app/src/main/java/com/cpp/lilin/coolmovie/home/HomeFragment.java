@@ -9,10 +9,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.android.volley.Response;
@@ -21,6 +21,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.detail.MovieDetailActivity;
+import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.SortUtil;
 import com.google.gson.Gson;
@@ -94,6 +95,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
                             .show();
                     break;
                 case MESSAGE_LOAD_MORE_SUCCESS:
+                    mMovieAdapter.update(mMovies);
                     mCurrentPage++;
                     mIsLoading = false;
                     break;
@@ -111,6 +113,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.e(TAG, "onViewCreated: " );
         if (getArguments() != null) {
             mType = getArguments().getBoolean(TYPE_KEY);
         }
@@ -178,6 +181,12 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy: " );
+    }
+
     /**
      * 请求流行电影列表
      */
@@ -209,18 +218,23 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
      * @param page 页数
      */
     public synchronized void requestPopularMovies(final int page) {
+        Log.e(TAG, "requestPopularMovies: page->"+page );
         if (page > mMaxPage) {
             return;
         }
         StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(page), new Response
                 .Listener<String>() {
             @Override
-            public void onResponse(String response) {
-                Gson gson = new Gson();
-                MovieModel movieModel = gson.fromJson(response, MovieModel.class);
-                mMovies.addAll(movieModel.getResults());
-                mMovieAdapter.update(mMovies);
-                mHandler.obtainMessage(MESSAGE_LOAD_MORE_SUCCESS).sendToTarget();
+            public void onResponse(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gson gson = new Gson();
+                        MovieModel movieModel = gson.fromJson(response, MovieModel.class);
+                        mMovies.addAll(movieModel.getResults());
+                        mHandler.obtainMessage(MESSAGE_LOAD_MORE_SUCCESS).sendToTarget();
+                    }
+                }).start();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -244,10 +258,26 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
 
     @Override
     public void onClick(int position, View v, MovieModel.Result movie) {
-        ImageView imageView = (ImageView) v.findViewById(R.id.item_iv_poster);
-        Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-        intent.putExtra("movie", movie);
-//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "share").toBundle());
-        startActivity(intent);
+        if (getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity.mIsTablet) {
+                mainActivity.addDetailFragment(movie);
+            } else {
+                Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                intent.putExtra("movie", movie);
+                startActivity(intent);
+            }
+        } else if (getActivity() instanceof FavoriteActivity) {
+
+            FavoriteActivity favoriteActivity = (FavoriteActivity) getActivity();
+
+            if (favoriteActivity.mIsTablet) {
+                favoriteActivity.addDetailFragment(movie);
+            } else {
+                Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                intent.putExtra("movie", movie);
+                startActivity(intent);
+            }
+        }
     }
 }

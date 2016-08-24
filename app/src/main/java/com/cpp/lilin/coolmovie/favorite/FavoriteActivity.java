@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,12 +14,16 @@ import android.view.View;
 
 import com.cpp.lilin.coolmovie.BaseActivity;
 import com.cpp.lilin.coolmovie.R;
+import com.cpp.lilin.coolmovie.home.DetailFragment;
 import com.cpp.lilin.coolmovie.home.HomeFragment;
+import com.cpp.lilin.coolmovie.home.MovieModel;
 
 /**
  * Created by lilin on 2016/7/28.
  */
 public class FavoriteActivity extends BaseActivity implements View.OnClickListener {
+
+    public boolean mIsTablet = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +59,32 @@ public class FavoriteActivity extends BaseActivity implements View.OnClickListen
             fragmentTransaction.add(R.id.container, homeFragment).commit();
         }
 
+        mIsTablet = (findViewById(R.id.container_detail) != null);
+    }
+
+    public void addDetailFragment(MovieModel.Result result) {
+        DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.container_detail);
+
+        if (detailFragment == null) {
+            detailFragment = DetailFragment.getInstance(result);
+        } else {
+            detailFragment.update(result);
+        }
+
+        if (!detailFragment.isAdded()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container_detail, detailFragment);
+            fragmentTransaction.commit();
+        }
+
+    }
+
+    public void updateFavorite() {
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        if (homeFragment != null) {
+            homeFragment.requestFavoriteMovies();
+        }
 
     }
 

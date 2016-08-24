@@ -1,7 +1,6 @@
 package com.cpp.lilin.coolmovie.home;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -11,10 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
@@ -28,8 +26,6 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private Context mContext;
     private List<MovieModel.Result> mMovies;
-    private ImageLoader mImageLoader;
-    private DisplayImageOptions mDisplayImageOptions;
     private LClickListener mLClickListener;
     private RecyclerView mRecyclerView;
 
@@ -57,15 +53,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public MovieAdapter(Context context, List<MovieModel.Result> movies, boolean addFooter) {
         mContext = context;
         mMovies = movies;
-        mImageLoader = ImageLoader.getInstance();
         mAddFooter = addFooter;
-
-        mDisplayImageOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.ic_download)
-                .showImageOnFail(R.drawable.ic_error)
-                .cacheOnDisk(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
     }
 
     @Override
@@ -96,7 +84,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             itemViewHolder.movieLanguage.setText(language);
             itemViewHolder.movieVote.setText(vote);
 
-            mImageLoader.displayImage(imageUrl, itemViewHolder.moviePoster, mDisplayImageOptions);
+            Glide.with(mContext).load(imageUrl).placeholder(R.drawable.ic_download).error(R.drawable.ic_error).into(itemViewHolder.moviePoster);
         }
     }
 

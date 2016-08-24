@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,20 +17,18 @@ import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
+    private static final String TAG = "MainActivity";
 
-    private enum FRAGMENTS {
-        HOME_FRAGMENT
-    }
+    public boolean mIsTablet = false;
 
-    private FRAGMENTS mCurrentFragment = FRAGMENTS.HOME_FRAGMENT;
 
     private Toolbar mToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.home_title);
@@ -50,8 +49,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container, homeFragment);
             fragmentTransaction.commit();
-            mCurrentFragment = FRAGMENTS.HOME_FRAGMENT;
         }
+
+        mIsTablet = (findViewById(R.id.container_detail) != null);
+    }
+
+    public void addDetailFragment(MovieModel.Result result) {
+        DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.container_detail);
+
+        if (detailFragment == null) {
+            detailFragment = DetailFragment.getInstance(result);
+        } else {
+            detailFragment.update(result);
+        }
+
+        if (!detailFragment.isAdded()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container_detail, detailFragment);
+            fragmentTransaction.commit();
+        }
+
     }
 
 
@@ -59,25 +77,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home_menu, menu);
         return super.onCreateOptionsMenu(menu);
-
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        switch (mCurrentFragment) {
-            case HOME_FRAGMENT:
-                menu.findItem(R.id.menu_refresh).setVisible(true);
-                menu.findItem(R.id.menu_sort_popular).setVisible(true);
-                menu.findItem(R.id.menu_sort_vote).setVisible(true);
-                break;
-            default:
-                menu.findItem(R.id.menu_refresh).setVisible(false);
-                menu.findItem(R.id.menu_sort_popular).setVisible(false);
-                menu.findItem(R.id.menu_sort_vote).setVisible(false);
-                break;
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

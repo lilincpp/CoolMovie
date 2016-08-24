@@ -28,16 +28,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.cpp.lilin.coolmovie.BaseActivity;
 import com.cpp.lilin.coolmovie.R;
 import com.cpp.lilin.coolmovie.home.MovieModel;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.ToastUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 /**
@@ -179,7 +182,9 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onResponse(String response) {
-                Gson gson = new Gson();
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                Gson gson = builder.create();
                 TrailerModel trailerModel = gson.fromJson(response, TrailerModel.class);
                 if (trailerModel.getResults().size() == 0) {
                     mHandler.obtainMessage(MESSAGE_NO_TRAILER).sendToTarget();
@@ -204,7 +209,9 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onResponse(String response) {
-                Gson gson = new Gson();
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                Gson gson = builder.create();
                 ReviewModel reviewModel = gson.fromJson(response, ReviewModel.class);
                 mHandler.obtainMessage(MESSAGE_ADD_REVIEW, reviewModel).sendToTarget();
             }

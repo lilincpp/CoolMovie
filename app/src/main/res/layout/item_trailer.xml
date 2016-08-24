@@ -9,7 +9,6 @@
         android:layout_width="88dp"
         android:layout_height="104dp"
         android:layout_margin="8dp"
-        android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:stateListAnimator="@drawable/selector_cardview">
 

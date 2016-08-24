@@ -41,6 +41,37 @@ public class RequestUtil {
         return stringBuilder.toString();
     }
 
+    /**
+     * 请求当前评分最高的电影
+     *
+     * @return
+     */
+    public static String getTopMovies() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(MovieApi.SERVICE_URL)
+                .append("/3/movie/top_rated?")
+                .append("api_key=")
+                .append(MovieApi.API_KEY);
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 请求当前评分最高的电影
+     *
+     * @param page
+     * @return
+     */
+    public static String getTopMovies(final int page) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(MovieApi.SERVICE_URL)
+                .append("/3/movie/top_rated?")
+                .append("api_key=")
+                .append(MovieApi.API_KEY)
+                .append("&")
+                .append("page=" + page);
+        return stringBuilder.toString();
+    }
+
 
     /**
      * 请求一张图片资源

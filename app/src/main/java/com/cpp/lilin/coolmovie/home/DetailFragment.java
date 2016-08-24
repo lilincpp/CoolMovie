@@ -38,11 +38,13 @@ import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.ToastUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 /**
@@ -73,11 +75,26 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("movie", mMovie);
+        super.onSaveInstanceState(outState);
+    }
+
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
-        mMovie = (MovieModel.Result) getArguments().getSerializable("movie");
+        if (savedInstanceState == null) {
+            mMovie = (MovieModel.Result) getArguments().getSerializable("movie");
+        } else {
+            mMovie = (MovieModel.Result) savedInstanceState.getSerializable("movie");
+        }
         mImageLoader = ImageLoader.getInstance();
         mDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
@@ -189,7 +206,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(String response) {
-                Gson gson = new Gson();
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                Gson gson = builder.create();
                 TrailerModel trailerModel = gson.fromJson(response, TrailerModel.class);
                 if (trailerModel.getResults().size() == 0) {
                     mHandler.obtainMessage(MESSAGE_NO_TRAILER).sendToTarget();
@@ -214,7 +233,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(String response) {
-                Gson gson = new Gson();
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                Gson gson = builder.create();
                 ReviewModel reviewModel = gson.fromJson(response, ReviewModel.class);
                 mHandler.obtainMessage(MESSAGE_ADD_REVIEW, reviewModel).sendToTarget();
             }
@@ -235,7 +256,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     }
 
     private synchronized void addReview(ReviewModel.Result result) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_review, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_review, null);
         TextView tvName = (TextView) view.findViewById(R.id.tv_reviewer_name);
         TextView tvContent = (TextView) view.findViewById(R.id.tv_review_content);
 
@@ -316,13 +337,11 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
     private synchronized void addMovieToFavorites() {
         if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
-            Log.e(TAG, "addMovieToFavorites -> Save movie:" + mMovie.getTitle());
             mMovie.save();
         }
     }
 
     private synchronized void removeMovieFromFavorites() {
-        Log.e(TAG, "removeMovieFromFavorites -> delete movie" + mMovie.getTitle());
         new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
         if (getActivity() instanceof FavoriteActivity) {
             FavoriteActivity favoriteActivity = (FavoriteActivity) getActivity();

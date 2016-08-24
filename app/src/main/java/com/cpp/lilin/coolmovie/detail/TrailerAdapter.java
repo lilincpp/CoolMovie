@@ -1,6 +1,9 @@
 package com.cpp.lilin.coolmovie.detail;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +67,13 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         }
     }
 
+    private static final String TAG = "TrailerAdapter";
+
     @Override
     public void onClick(View v) {
         int position = mRecyclerView.getChildAdapterPosition(v);
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + mResults.get(position).getId()));
+        mRecyclerView.getContext().startActivity(intent);
     }
 }

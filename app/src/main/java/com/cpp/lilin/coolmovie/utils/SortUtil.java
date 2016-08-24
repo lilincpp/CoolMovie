@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Created by lilin on 2016/7/9.
+ *
+ * @deprecated 使用网络数据代替本地排序
  */
 public class SortUtil {
 

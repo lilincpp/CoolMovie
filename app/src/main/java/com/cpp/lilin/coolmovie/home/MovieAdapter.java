@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public interface LClickListener {
         void onClick(int position, View v, MovieModel.Result movie);
     }
+
+    private static final String TAG = "MovieAdapter";
 
     public void setClickListener(LClickListener clickListener) {
         mLClickListener = clickListener;

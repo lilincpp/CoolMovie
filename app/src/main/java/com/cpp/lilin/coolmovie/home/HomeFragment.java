@@ -25,7 +25,10 @@ import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.SortUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.Serializable;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,7 @@ import java.util.List;
 public class HomeFragment extends Fragment implements MovieAdapter.LClickListener {
 
     public static final String TYPE_KEY = "type_key";
+    public static final String SORT_KEY = "sort_key";
     /**
      * 默认页面-请求网络数据及自动加载
      */
@@ -69,7 +73,9 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
 
     private boolean mType = TYPE_DEFAULT;
 
-    public enum SORT_METHOD {
+    private SORT_METHOD mSort = SORT_METHOD.POPULAR;
+
+    public enum SORT_METHOD implements Serializable {
         POPULAR, VOTE
     }
 
@@ -103,6 +109,14 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         }
     };
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(TYPE_KEY, mType);
+        outState.putSerializable(SORT_KEY, mSort);
+        super.onSaveInstanceState(outState);
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,10 +127,16 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated: " );
-        if (getArguments() != null) {
+
+        if (getArguments() != null && savedInstanceState == null) {
             mType = getArguments().getBoolean(TYPE_KEY);
         }
+
+        if (savedInstanceState != null) {
+            mType = savedInstanceState.getBoolean(TYPE_KEY);
+            mSort = (SORT_METHOD) savedInstanceState.getSerializable(SORT_KEY);
+        }
+
         mLoading = (ProgressBar) view.findViewById(R.id.loading);
         mMovies = new ArrayList<>();
         mMovieAdapter = new MovieAdapter(getActivity(), mMovies, mType);
@@ -135,7 +155,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         super.onResume();
         if (mType) {
             if (mMovies.size() == 0) {
-                requestPopularMovies();
+                requestMovies();
             }
         } else {
             requestFavoriteMovies();
@@ -155,7 +175,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
             int lastitem = mGridLayoutManager.findLastVisibleItemPosition();
             if (dy > 0 && lastitem == mMovieAdapter.getItemCount() - 1 && !mIsLoading && mType) {
                 mIsLoading = true;
-                requestPopularMovies(mCurrentPage + 1);
+                requestMovies(mCurrentPage + 1);
             }
         }
     };
@@ -166,13 +186,17 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
     public void refresh() {
         if (mType) {
             mMovieAdapter.clear();
-            requestPopularMovies();
+            requestMovies();
         }
     }
 
     public void sort(SORT_METHOD sort) {
-        SortUtil.sort(mMovies, sort);
-        mMovieAdapter.update(mMovies);
+        if (mSort != sort) {
+            mSort = sort;
+            mMovies.clear();
+            mMovieAdapter.update(mMovies);
+            requestMovies();
+        }
     }
 
     public void moveToTop() {
@@ -181,22 +205,21 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.e(TAG, "onDestroy: " );
-    }
+    public synchronized void requestMovies() {
+        String request;
+        if (mSort == SORT_METHOD.POPULAR) {
+            request = RequestUtil.getPopularMovies();
+        } else {
+            request = RequestUtil.getTopMovies();
+        }
 
-    /**
-     * 请求流行电影列表
-     */
-    public synchronized void requestPopularMovies() {
-        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(), new Response
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, request, new Response
                 .Listener<String>() {
             @Override
             public void onResponse(String response) {
-//                Log.e(TAG, response);
-                Gson gson = new Gson();
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                Gson gson = builder.create();
                 MovieModel movieModel = gson.fromJson(response, MovieModel.class);
                 mMaxPage = Integer.decode(movieModel.getTotal_pages());
                 mMovies = movieModel.getResults();
@@ -212,24 +235,36 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
+
     /**
      * 请求流行电影列表
      *
      * @param page 页数
      */
-    public synchronized void requestPopularMovies(final int page) {
-        Log.e(TAG, "requestPopularMovies: page->"+page );
+    public synchronized void requestMovies(final int page) {
+        Log.e(TAG, "requestPopularMovies: page->" + page);
         if (page > mMaxPage) {
             return;
         }
-        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, RequestUtil.getPopularMovies(page), new Response
+
+        String request;
+
+        if (mSort == SORT_METHOD.POPULAR) {
+            request = RequestUtil.getPopularMovies(page);
+        } else {
+            request = RequestUtil.getTopMovies(page);
+        }
+
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.GET, request, new Response
                 .Listener<String>() {
             @Override
             public void onResponse(final String response) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Gson gson = new Gson();
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+                        Gson gson = builder.create();
                         MovieModel movieModel = gson.fromJson(response, MovieModel.class);
                         mMovies.addAll(movieModel.getResults());
                         mHandler.obtainMessage(MESSAGE_LOAD_MORE_SUCCESS).sendToTarget();

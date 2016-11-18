@@ -19,6 +19,7 @@ public class RequestUtil {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)
                 .append("/3/movie/popular?")
+                .append("language=zh&")
                 .append("api_key=")
                 .append(MovieApi.API_KEY);
         return stringBuilder.toString();
@@ -34,6 +35,7 @@ public class RequestUtil {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)
                 .append("/3/movie/popular?")
+                .append("language=zh&")
                 .append("api_key=")
                 .append(MovieApi.API_KEY)
                 .append("&")
@@ -50,6 +52,7 @@ public class RequestUtil {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)
                 .append("/3/movie/top_rated?")
+                .append("language=zh&")
                 .append("api_key=")
                 .append(MovieApi.API_KEY);
         return stringBuilder.toString();
@@ -65,6 +68,7 @@ public class RequestUtil {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(MovieApi.SERVICE_URL)
                 .append("/3/movie/top_rated?")
+                .append("language=zh&")
                 .append("api_key=")
                 .append(MovieApi.API_KEY)
                 .append("&")

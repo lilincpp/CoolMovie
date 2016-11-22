@@ -14,8 +14,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -24,13 +22,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.activeandroid.query.Delete;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cpp.lilin.coolmovie.R;
-import com.cpp.lilin.coolmovie.detail.MovieDetailActivity;
+import com.cpp.lilin.coolmovie.db.MovieHelper;
 import com.cpp.lilin.coolmovie.detail.ReviewModel;
 import com.cpp.lilin.coolmovie.detail.TrailerAdapter;
 import com.cpp.lilin.coolmovie.detail.TrailerModel;
@@ -148,7 +145,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     private void showMovie() {
         if (mMovie != null) {
 
-            mFabFavorite.setTag(MovieModel.Result.isFavorited(mMovie.getMovieId()));
+            mFabFavorite.setTag(MovieHelper.isFavorited(getActivity(), mMovie.getMovieId()));
             changeFavoriteFabStatus((Boolean) mFabFavorite.getTag());
 
             final String title = mMovie.getTitle();
@@ -336,13 +333,16 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     }
 
     private synchronized void addMovieToFavorites() {
-        if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
-            mMovie.save();
+        if (!MovieHelper.isFavorited(getActivity(), mMovie.getMovieId())) {
+//            mMovie.save();
+            MovieHelper.add(getActivity(), mMovie);
         }
     }
 
     private synchronized void removeMovieFromFavorites() {
-        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+//        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+//        mMovie.delete();
+        MovieHelper.delete(getActivity(), mMovie);
         if (getActivity() instanceof FavoriteActivity) {
             FavoriteActivity favoriteActivity = (FavoriteActivity) getActivity();
             favoriteActivity.updateFavorite();

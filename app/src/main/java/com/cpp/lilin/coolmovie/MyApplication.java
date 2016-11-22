@@ -2,7 +2,6 @@ package com.cpp.lilin.coolmovie;
 
 import android.app.Application;
 
-import com.activeandroid.ActiveAndroid;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -17,12 +16,12 @@ public class MyApplication extends Application {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
 
-        ActiveAndroid.initialize(this);
+
+
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        ActiveAndroid.dispose();
     }
 }

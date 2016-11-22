@@ -1,12 +1,5 @@
 package com.cpp.lilin.coolmovie.home;
 
-import android.text.TextUtils;
-
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Select;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -22,78 +15,49 @@ public class MovieModel {
     private String total_pages;
 
 
-    @Table(name = "MovieModel_Result")
-    public static class Result extends Model implements Serializable {
 
-        /**
-         * 查询所有收藏的电影
-         *
-         * @return
-         */
-        public static List<MovieModel.Result> getAll() {
-            return new Select().from(MovieModel.Result.class).execute();
-        }
-
-        /**
-         * 查询某电影是否收藏
-         *
-         * @param movieId
-         * @return
-         */
-        public static boolean isFavorited(String movieId) {
-            boolean ok = false;
-
-            List<MovieModel.Result> results = getAll();
-
-            for (MovieModel.Result result : results) {
-                if (TextUtils.equals(result.getMovieId(), movieId)) {
-                    ok = true;
-                    break;
-                }
-            }
-            return ok;
-        }
+    public static class Result  implements Serializable {
 
 
-        @Column(name = "poster_path")
+//        @Column
         private String poster_path;
 
-        @Column(name = "adult")
+//        @Column
         private String adult;
 
-        @Column(name = "overview")
+//        @Column
         private String overview;
 
-        @Column(name = "release_date")
+//        @Column
         private String release_date;
 
         private String[] genre_ids;
 
-        @Column(name = "movie_id")
+//        @PrimaryKey
         private String id;
 
-        @Column(name = "original_title")
+//        @Column
         private String original_title;
 
-        @Column(name = "original_language")
+//        @Column
         private String original_language;
 
-        @Column(name = "title")
+//        @Column
         private String title;
 
-        @Column(name = "backdrop_path")
+//        @Column
         private String backdrop_path;
 
-        @Column(name = "popularity")
+//        @Column
         private String popularity;
 
-        @Column(name = "vote_count")
+//        @Column
         private String vote_count;
 
-        @Column(name = "video")
+//        @Column
         private String video;
 
-        @Column(name = "vote_average")
+//        @Column
         private String vote_average;
 
         public String getPoster_path() {
@@ -150,6 +114,76 @@ public class MovieModel {
 
         public String getVote_average() {
             return vote_average;
+        }
+
+        public Result setPoster_path(String poster_path) {
+            this.poster_path = poster_path;
+            return this;
+        }
+
+        public Result setVote_average(String vote_average) {
+            this.vote_average = vote_average;
+            return this;
+        }
+
+        public Result setVideo(String video) {
+            this.video = video;
+            return this;
+        }
+
+        public Result setVote_count(String vote_count) {
+            this.vote_count = vote_count;
+            return this;
+        }
+
+        public Result setPopularity(String popularity) {
+            this.popularity = popularity;
+            return this;
+        }
+
+        public Result setBackdrop_path(String backdrop_path) {
+            this.backdrop_path = backdrop_path;
+            return this;
+        }
+
+        public Result setTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Result setOriginal_language(String original_language) {
+            this.original_language = original_language;
+            return this;
+        }
+
+        public Result setOriginal_title(String original_title) {
+            this.original_title = original_title;
+            return this;
+        }
+
+        public Result setMovieId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Result setGenre_ids(String[] genre_ids) {
+            this.genre_ids = genre_ids;
+            return this;
+        }
+
+        public Result setRelease_date(String release_date) {
+            this.release_date = release_date;
+            return this;
+        }
+
+        public Result setOverview(String overview) {
+            this.overview = overview;
+            return this;
+        }
+
+        public Result setAdult(String adult) {
+            this.adult = adult;
+            return this;
         }
 
         @Override

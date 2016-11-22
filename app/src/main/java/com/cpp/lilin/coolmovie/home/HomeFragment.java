@@ -20,10 +20,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cpp.lilin.coolmovie.R;
+import com.cpp.lilin.coolmovie.db.MovieHelper;
 import com.cpp.lilin.coolmovie.detail.MovieDetailActivity;
 import com.cpp.lilin.coolmovie.favorite.FavoriteActivity;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
-import com.cpp.lilin.coolmovie.utils.SortUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -285,7 +285,7 @@ public class HomeFragment extends Fragment implements MovieAdapter.LClickListene
      */
     public synchronized void requestFavoriteMovies() {
         mMovieAdapter.clear();
-        List<MovieModel.Result> results = MovieModel.Result.getAll();
+        List<MovieModel.Result> results = MovieHelper.getAll(getActivity());
         mMovies = results;
         mMovieAdapter.update(mMovies);
         mHandler.obtainMessage(MESSAGE_LOADING_GONE).sendToTarget();

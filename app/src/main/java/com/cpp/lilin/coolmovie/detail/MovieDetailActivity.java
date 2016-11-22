@@ -23,13 +23,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.activeandroid.query.Delete;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.cpp.lilin.coolmovie.BaseActivity;
 import com.cpp.lilin.coolmovie.R;
+import com.cpp.lilin.coolmovie.db.MovieHelper;
 import com.cpp.lilin.coolmovie.home.MovieModel;
 import com.cpp.lilin.coolmovie.utils.RequestUtil;
 import com.cpp.lilin.coolmovie.utils.ToastUtil;
@@ -109,7 +108,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         mFabFavorite = (FloatingActionButton) findViewById(R.id.fab_favorite);
         mFabFavorite.setOnClickListener(this);
 
-        mFabFavorite.setTag(MovieModel.Result.isFavorited(mMovie.getMovieId()));
+        mFabFavorite.setTag(MovieHelper.isFavorited(this,mMovie.getMovieId()));
         changeFavoriteFabStatus((Boolean) mFabFavorite.getTag());
 
         mMovieBackground = (ImageView) findViewById(R.id.movie_background);
@@ -338,13 +337,16 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private synchronized void addMovieToFavorites() {
-        if (!MovieModel.Result.isFavorited(mMovie.getMovieId())) {
-            mMovie.save();
+        if (!MovieHelper.isFavorited(this, mMovie.getMovieId())) {
+//            mMovie.save();
+            MovieHelper.add(this, mMovie);
         }
     }
 
     private synchronized void removeMovieFromFavorites() {
-        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+//        new Delete().from(MovieModel.Result.class).where("movie_id=?", mMovie.getMovieId()).execute();
+//        mMovie.delete();
+        MovieHelper.delete(this, mMovie);
     }
 
     @Override

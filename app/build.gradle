@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
+
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
@@ -36,6 +38,8 @@ dependencies {
     compile 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:palette-v7:23.3.0'
-    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+
+
+
 }
